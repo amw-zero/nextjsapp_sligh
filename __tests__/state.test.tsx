@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { store } from '../lib/state';
 
-test('incrementing store', () => {
+test('incrementing store', async () => {
     const { getState } = store;
     let state = getState();
 
@@ -9,7 +9,7 @@ test('incrementing store', () => {
         state.count,
     ).toEqual(0);
 
-    state.increment();
+    await state.increment();
 
     state = getState();
     expect(
