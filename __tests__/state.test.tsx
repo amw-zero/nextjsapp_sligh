@@ -1,8 +1,20 @@
 import { expect, test } from 'vitest'
-import { store } from '../lib/state';
+import { store, ClientState, Server } from '../lib/state';
+import { StoreApi } from 'zustand/vanilla';
+
+class TestApplication {
+    server: Server = new Server();
+    client: StoreApi<ClientState>;
+
+    constructor(client: StoreApi<ClientState>) {
+        this.client = client;
+    }
+}
 
 test('incrementing store', async () => {
-    const { getState } = store;
+    const app = new TestApplication(store);
+
+    const { getState } = app.client;
     let state = getState();
 
     expect(

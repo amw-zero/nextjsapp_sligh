@@ -1,15 +1,24 @@
 import { createStore } from 'zustand/vanilla';
 
-type State = {
+// Ideas: 
+// * Create full stack counter example. Not sure what properties would be. Model is easy though.
+// * Personal finance app. Done this a million times. Could be fine.
+// * Security example - authorization in model, leave out check in server. 
+// * Have zustand state for entire application, just for testing - an "application" is 
+//   the combination of the client state (meant for UI data binding) and server state
+
+export type ClientState = {
     count: number;
+    isLoading: boolean;
+    increment: () => Promise<void>;
 }
 
-export const store = createStore<State>((set) => ({
+export const store = createStore<ClientState>()((set) => ({
     count: 0,
     isLoading: false,
-    count2: 0,
-    isLoading2: false,
 
+    // Action Type: --> state.count, state.isLoading
+    // { count: number; isLoading: boolean; }
     increment: async () => new Promise<void>((resolve) => {
         set(() => ({ isLoading: true }));
         setTimeout(() => {
@@ -18,11 +27,25 @@ export const store = createStore<State>((set) => ({
         }, 1000)
     }),
 
-    increment2: async () => new Promise<void>((resolve) => {
-        set(() => ({ isLoading2: true }));
+    decrement: async () => new Promise<void>((resolve) => {
+        set(() => ({ isLoading: true }));
         setTimeout(() => {
-            set((state) => ({ count2: state.count2 + 1, isLoading2: false }))
+            set((state) => ({ count: state.count - 1, isLoading: false }))
             resolve();
         }, 1000)
-    })
+    }),
 }));
+
+export class Server {
+    count: number = 0;
+
+    increment() {
+        this.count += 1;
+    }
+
+    decrement() {
+        this.count -= 1;
+    }
+}
+
+

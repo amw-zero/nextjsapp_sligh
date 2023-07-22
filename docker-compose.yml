@@ -1,0 +1,22 @@
+version: "3.1"
+services:
+  postgres:
+    image: "postgres:15.3-alpine"
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=root
+  nextapp:
+    build:
+      context: ./
+      target: runner
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: yarn dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
