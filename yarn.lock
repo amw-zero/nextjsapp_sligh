@@ -1650,6 +1650,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-check@npm:^3.11.0":
+  version: 3.11.0
+  resolution: "fast-check@npm:3.11.0"
+  dependencies:
+    pure-rand: "npm:^6.0.0"
+  checksum: 70600e5570008cb9bed4edd02d8ff28aec4f2ee193c3d033c24a23a47870c2525bdc08a83786721348e85cde1143618516948c099a99e66eb07632211e451461
+  languageName: node
+  linkType: hard
+
 "for-each@npm:^0.3.3":
   version: 0.3.3
   resolution: "for-each@npm:0.3.3"
@@ -2877,6 +2886,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pure-rand@npm:^6.0.0":
+  version: 6.0.2
+  resolution: "pure-rand@npm:6.0.2"
+  checksum: 0556bee2e16a8d081a2b7630d9cb4e5dafd4e6bd6e4c61de1cf1ef5974f127847523e3d0e62884f6f5d64b66a5e93b05bd8f37ed009f3a4fe5089899e05914aa
+  languageName: node
+  linkType: hard
+
 "querystringify@npm:^2.1.1":
   version: 2.2.0
   resolution: "querystringify@npm:2.2.0"
@@ -3028,6 +3044,7 @@ __metadata:
     "@types/node": "npm:17.0.23"
     "@types/react": "npm:17.0.43"
     "@vitejs/plugin-react": "npm:1.3.0"
+    fast-check: "npm:^3.11.0"
     jsdom: "npm:^19.0.0"
     next: "npm:latest"
     react: "npm:18.0.0"

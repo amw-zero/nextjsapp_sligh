@@ -11,9 +11,10 @@ export type ClientState = {
     count: number;
     isLoading: boolean;
     increment: () => Promise<void>;
+    decrement: () => Promise<void>;
 }
 
-export const store = createStore<ClientState>()((set) => ({
+export const makeStore = () => createStore<ClientState>()((set) => ({
     count: 0,
     isLoading: false,
 
@@ -35,6 +36,8 @@ export const store = createStore<ClientState>()((set) => ({
         }, 1000)
     }),
 }));
+
+export const store = makeStore();
 
 export class Server {
     count: number = 0;

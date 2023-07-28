@@ -1,0 +1,1 @@
+sligh counter.sl -cert __tests__/sligh.test.ts -include Counter -out __tests__/model.ts

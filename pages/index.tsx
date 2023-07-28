@@ -25,12 +25,6 @@ const Home: NextPage = () => {
     isLoading: state.isLoading,
   }));
 
-  // const { count2, increment2, isLoading2 } = useBoundStore((state) => ({ 
-  //   count2: state.count2, 
-  //   increment2: state.increment2,
-  //   isLoading2: state.isLoading2,
-  // }));
-
   return (
     <div className={styles.container}>
       <main className={styles.main}>
