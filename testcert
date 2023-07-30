@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+#./gencert
+yarn test sligh --test-timeout=10000

@@ -20,8 +20,8 @@ const Home: NextPage = () => {
   }
 
   const { count, increment, isLoading } = useBoundStore((state) => ({ 
-    count: state.count, 
-    increment: state.increment,
+    count: state.value, 
+    increment: state.Increment,
     isLoading: state.isLoading,
   }));
 

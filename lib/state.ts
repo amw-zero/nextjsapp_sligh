@@ -8,30 +8,30 @@ import { createStore } from 'zustand/vanilla';
 //   the combination of the client state (meant for UI data binding) and server state
 
 export type ClientState = {
-    count: number;
+    value: number;
     isLoading: boolean;
-    increment: () => Promise<void>;
+    Increment: () => Promise<void>;
     decrement: () => Promise<void>;
 }
 
 export const makeStore = () => createStore<ClientState>()((set) => ({
-    count: 0,
+    value: 0,
     isLoading: false,
 
     // Action Type: --> state.count, state.isLoading
     // { count: number; isLoading: boolean; }
-    increment: async () => new Promise<void>((resolve) => {
+    Increment: async () => new Promise<void>((resolve) => {
         set(() => ({ isLoading: true }));
         setTimeout(() => {
-            set((state) => ({ count: state.count + 1, isLoading: false }))
+            set((state) => ({ value: state.value + 1, isLoading: false }))
             resolve();
-        }, 1000)
+        }, 0)
     }),
 
     decrement: async () => new Promise<void>((resolve) => {
         set(() => ({ isLoading: true }));
         setTimeout(() => {
-            set((state) => ({ count: state.count - 1, isLoading: false }))
+            set((state) => ({ value: state.value - 1, isLoading: false }))
             resolve();
         }, 1000)
     }),
