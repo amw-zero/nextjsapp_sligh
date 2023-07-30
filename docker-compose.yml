@@ -4,10 +4,12 @@ services:
     image: "postgres:15.3-alpine"
     restart: always
     ports:
-      - 5432:5432
+      - 5433:5433
     environment:
       - POSTGRES_PASSWORD=pass
       - POSTGRES_USER=root
+      - POSTGRES_DB=counter
+    command: -p 5433      
   nextapp:
     build:
       context: ./
