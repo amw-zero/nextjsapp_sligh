@@ -33,21 +33,21 @@ async function fetchData<T>(path: string, init: RequestInit, parser: FetchParser
         const resp = await fetch(path, init);
         const data = parser(await resp.json());
 
+        console.log("Parse result", {data});
+
         if (data) {
             return { type: "success", data };
         } else {
             return { type: "error", error: "fetch_parse_err" };
         }
-    } catch {
+    } catch (e) {
         return { type: "error", error: "fetch_err" };
     }
 }
 
 function parseCounter(resp: any): Counter | undefined {
-    if (resp.value) {
-        if (resp.value.name && resp.value.value) {
-            return resp.value;
-        }
+    if (resp.name !== undefined && resp.value !== undefined) {
+        return resp;
     }
 
     return;
@@ -55,11 +55,12 @@ function parseCounter(resp: any): Counter | undefined {
 
 
 function parseCounters(resp: any): Counter[] | undefined {
-    if (resp.counters) {
-        return resp.counters.map(parseCounter).filter((c: Counter) => c);
+    let parsed = resp.map(parseCounter).filter((c: Counter) => c);
+    if (parsed.length === 0) {
+        return;
     }
 
-    return;
+    return parsed;
 }
 
 export const makeStore = () => createStore<ClientState>()((set) => ({
@@ -72,7 +73,7 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
         const result = await fetchData("api/counters", { method: "GET" }, parseCounters)
         switch (result.type) {
             case "success":
-                set(() => ({ value: result.data, isLoading: false }));
+                set(() => ({ counters: result.data, isLoading: false }));
                 break;
             case "error":
                 set(() => ({ error: result.error, isLoading: false }));
