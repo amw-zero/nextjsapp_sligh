@@ -9,6 +9,6 @@ datasource db {
 }
 
 model Counter {
-    id Int @default(autoincrement()) @id
+    name String @id
     value Int @default(0)
 }

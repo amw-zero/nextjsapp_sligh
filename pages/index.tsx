@@ -1,15 +1,16 @@
 import type { NextPage } from 'next'
 import styles from '../styles/Home.module.css'
-import { ClientState, store } from '../lib/state';
+import { ClientState, store, Counter } from '../lib/state';
 import { useStore } from 'zustand';
+import { useEffect } from 'react';
 
-const Count = ({ count, isLoading }: { count: number, isLoading: boolean }) => {
+const CounterView = ({ counter, isLoading }: { counter: Counter, isLoading: boolean }) => {
   return <>
     <div>
       {isLoading ? "loading..." : "done"}
     </div>
     <div>
-      {count}
+      {`${counter.name}: ${counter.value}`}
     </div>
   </>
 }
@@ -19,18 +20,23 @@ const Home: NextPage = () => {
     return useStore(store, selector)
   }
 
-  const { count, increment, isLoading } = useBoundStore((state) => ({ 
-    count: state.value, 
+  const { counters, increment, isLoading, Get } = useBoundStore((state) => ({ 
+    counters: state.counters, 
     increment: state.Increment,
     isLoading: state.isLoading,
+    Get: state.Get,
   }));
+
+  useEffect(() => {
+    Get();
+  }, [])
 
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        
-        <Count count={count} isLoading={isLoading} />
-
+        {counters.map((counter) => (
+          <CounterView counter={counter} isLoading={isLoading} />
+        ))}
         <button onClick={() => increment()}>
           Inc
         </button>

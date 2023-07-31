@@ -637,7 +637,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:5.0.0":
+"@prisma/client@npm:^5.0.0":
   version: 5.0.0
   resolution: "@prisma/client@npm:5.0.0"
   dependencies:
@@ -3079,7 +3079,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@prisma/client": "npm:5.0.0"
+    "@prisma/client": "npm:^5.0.0"
     "@testing-library/react": "npm:^12.1.4"
     "@types/node": "npm:17.0.23"
     "@types/react": "npm:17.0.43"
