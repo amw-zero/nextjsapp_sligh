@@ -18,7 +18,7 @@ export type ClientState = {
     error: string | null;
 
     Get: () => Promise<void>;
-    Increment: () => Promise<void>;
+    Increment: (name: string) => Promise<void>;
     decrement: () => Promise<void>;
 }
 
@@ -26,15 +26,13 @@ type FetchResult<T> =
     | { type: "success", data: T }
     | { type: "error", error: string };
 
-type FetchParser<T> = (response: any) => T | undefined
+type FetchParser<T> = (response: any) => T | undefined;
 
 async function fetchData<T>(path: string, init: RequestInit, parser: FetchParser<T>): Promise<FetchResult<T>> {
     try {
         const resp = await fetch(path, init);
+
         const data = parser(await resp.json());
-
-        console.log("Parse result", {data});
-
         if (data) {
             return { type: "success", data };
         } else {
@@ -84,13 +82,31 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
 
     // Action Type: --> state.count, state.isLoading
     // { count: number; isLoading: boolean; }
-    Increment: async () => new Promise<void>((resolve) => {
+    Increment: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
-//        await fetchData("api/counters/increment", { method: "POST" })
-        setTimeout(() => {
-            set((state) => ({ counters: [], isLoading: false }))
-            resolve();
-        }, 0)
+        const body = JSON.stringify({ name });
+        const result = await fetchData("api/counters/increment", { method: "POST", body }, parseCounter);
+        console.log({result});
+        switch (result.type) {
+            case "success":
+                set((state) => {
+                    // Note - see if this fails if just the fetch request is sent, i.e. if just the server state is updated
+                    // and client becomes incoherent.
+                    const index = state.counters.findIndex((c: Counter) => c.name === name);
+                    const nextCounters = [...state.counters];
+                    nextCounters[index] = result.data;
+
+                    return {
+                        counters: nextCounters,
+                        isLoading: false,
+                    }
+                });
+                break;
+            case "error":
+                set(() => ({ error: result.error, isLoading: false }));
+                break;
+        }
+        resolve();
     }),
 
     decrement: async () => new Promise<void>((resolve) => {

@@ -4,7 +4,15 @@ import { ClientState, store, Counter } from '../lib/state';
 import { useStore } from 'zustand';
 import { useEffect } from 'react';
 
+function useBoundStore<T>(selector: (state: ClientState) => T) {
+  return useStore(store, selector)
+}
+
 const CounterView = ({ counter, isLoading }: { counter: Counter, isLoading: boolean }) => {
+  const { increment } = useBoundStore((state) => ({
+    increment: state.Increment,
+  }));
+
   return <>
     <div>
       {isLoading ? "loading..." : "done"}
@@ -12,17 +20,15 @@ const CounterView = ({ counter, isLoading }: { counter: Counter, isLoading: bool
     <div>
       {`${counter.name}: ${counter.value}`}
     </div>
+    <button onClick={() => increment(counter.name)}>
+      Inc
+    </button>
   </>
 }
 
 const Home: NextPage = () => {
-  function useBoundStore<T>(selector: (state: ClientState) => T) {
-    return useStore(store, selector)
-  }
-
-  const { counters, increment, isLoading, Get } = useBoundStore((state) => ({ 
+  const { counters, isLoading, Get } = useBoundStore((state) => ({ 
     counters: state.counters, 
-    increment: state.Increment,
     isLoading: state.isLoading,
     Get: state.Get,
   }));
@@ -36,10 +42,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         {counters.map((counter) => (
           <CounterView counter={counter} isLoading={isLoading} />
-        ))}
-        <button onClick={() => increment()}>
-          Inc
-        </button>
+        ))}        
       </main>
     </div>
   )
