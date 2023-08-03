@@ -5,6 +5,7 @@ end
 
 process CounterApp:
     counters: Set(Counter)
+    favorites: Set(String)
 
     def Get():
         counters
@@ -24,5 +25,9 @@ process CounterApp:
         end
 
         counters := counters.update(findCounter, updateCounter)
-    end 
+    end
+
+    def AddFavorite(name: String):
+        favorites := favorites.append(name)
+    end
 end

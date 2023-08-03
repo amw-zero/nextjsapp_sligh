@@ -14,12 +14,15 @@ export interface Counter {
 
 export type ClientState = {
     counters: Counter[];
+    favorites: String[];
     isLoading: boolean;
     error: string | null;
 
-    Get: () => Promise<void>;
+    GetCounters: () => Promise<void>;
+    GetFavorites: () => Promise<void>;
     Create: (name: string) => Promise<void>;
     Increment: (name: string) => Promise<void>;
+    AddFavorite: (name: string) => Promise<void>;
     decrement: () => Promise<void>;
 }
 
@@ -62,17 +65,40 @@ function parseCounters(resp: any): Counter[] | undefined {
     return parsed;
 }
 
+function parseFavorite(resp: any): String | undefined {
+    return resp.name;
+}
+
+function parseFavorites(resp: any): String[] | undefined {
+    return resp.map(parseFavorite);
+}
+
 export const makeStore = () => createStore<ClientState>()((set) => ({
     counters: [],
+    favorites: [],
     isLoading: false,
     error: null,
 
-    Get: async () => new Promise<void>(async (resolve) => {
+    GetCounters: async () => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const result = await fetchData("api/counters", { method: "GET" }, parseCounters)
         switch (result.type) {
             case "success":
                 set(() => ({ counters: result.data, isLoading: false }));
+                break;
+            case "error":
+                set(() => ({ error: result.error, isLoading: false }));
+                break;
+        }
+        resolve();
+    }),
+
+    GetFavorites: async () => new Promise<void>(async (resolve) => {
+        set(() => ({ isLoading: true }));
+        const result = await fetchData("api/favorites", { method: "GET" }, parseFavorites)
+        switch (result.type) {
+            case "success":
+                set(() => ({ favorites: result.data, isLoading: false }));
                 break;
             case "error":
                 set(() => ({ error: result.error, isLoading: false }));
@@ -116,6 +142,26 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
                 set((state) => {
                     return {
                         counters: [...state.counters, result.data],
+                        isLoading: false,
+                    }
+                });
+                break;
+            case "error":
+                set(() => ({ error: result.error, isLoading: false }));
+                break;
+        }
+        resolve();
+    }),
+
+    AddFavorite: async (name: string) => new Promise<void>(async (resolve) => {
+        set(() => ({ isLoading: true }));
+        const body = JSON.stringify({ name });
+        const result = await fetchData("api/favorites/create", { method: "POST", body }, parseFavorite);
+        switch (result.type) {
+            case "success":
+                set((state) => {
+                    return {
+                        favorites: [...state.favorites, result.data],
                         isLoading: false,
                     }
                 });

@@ -12,3 +12,7 @@ model Counter {
     name String @id
     value Int @default(0)
 }
+
+model Favorite {
+    name String @id
+}
