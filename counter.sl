@@ -10,8 +10,8 @@ process CounterApp:
         counters
     end
 
-    def Create(counter: Counter):
-        counters := counters.append(counter)
+    def Create(name: String):
+        counters := counters.append(Counter.new(name, 0))
     end
 
     def Increment(name: String):
