@@ -57,13 +57,13 @@ const Home: NextPage = () => {
           These are the favorites
         </h1>
         {favoriteCounters.map((counter) => (
-          <CounterView key={counter.name} counter={counter} isLoading={isLoading} />
+          <CounterView key={counter.name} counter={counter} />
         ))}        
         <h1>
           Regular counters
         </h1>
         {regularCounters.map((counter) => (
-          <CounterView key={counter.name} counter={counter} isLoading={isLoading} />
+          <CounterView key={counter.name} counter={counter} />
         ))}  
         <h1>
           Add more
