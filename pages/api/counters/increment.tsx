@@ -2,8 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../../lib/prisma';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const counter = await prisma.counter.findFirst({ where: { name: req.body.name }});
-    console.log("Found counter", {counter});
+    const body = JSON.parse(req.body);
+    const counter = await prisma.counter.findFirst({ where: { name: body.name }});
     if (!counter) {
         res.status(404).end();
         return;

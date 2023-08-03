@@ -3,7 +3,7 @@ entity Counter:
     value: Int
 end
 
-process CounterProc:
+process CounterApp:
     counters: Set(Counter)
 
     def Get():

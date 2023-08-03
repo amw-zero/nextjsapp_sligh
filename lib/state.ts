@@ -18,6 +18,7 @@ export type ClientState = {
     error: string | null;
 
     Get: () => Promise<void>;
+    Create: (name: string) => Promise<void>;
     Increment: (name: string) => Promise<void>;
     decrement: () => Promise<void>;
 }
@@ -80,13 +81,10 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
         resolve();
     }),
 
-    // Action Type: --> state.count, state.isLoading
-    // { count: number; isLoading: boolean; }
     Increment: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const body = JSON.stringify({ name });
         const result = await fetchData("api/counters/increment", { method: "POST", body }, parseCounter);
-        console.log({result});
         switch (result.type) {
             case "success":
                 set((state) => {
@@ -98,6 +96,26 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
 
                     return {
                         counters: nextCounters,
+                        isLoading: false,
+                    }
+                });
+                break;
+            case "error":
+                set(() => ({ error: result.error, isLoading: false }));
+                break;
+        }
+        resolve();
+    }),
+
+    Create: async (name: string) => new Promise<void>(async (resolve) => {
+        set(() => ({ isLoading: true }));
+        const body = JSON.stringify({ name });
+        const result = await fetchData("api/counters/create", { method: "POST", body }, parseCounter);
+        switch (result.type) {
+            case "success":
+                set((state) => {
+                    return {
+                        counters: [...state.counters, result.data],
                         isLoading: false,
                     }
                 });
