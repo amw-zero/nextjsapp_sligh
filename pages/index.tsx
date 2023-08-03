@@ -9,9 +9,10 @@ function useBoundStore<T>(selector: (state: ClientState) => T) {
 }
 
 const CounterView = ({ counter }: { counter: Counter }) => {
-  const { increment, AddFavorite } = useBoundStore((state) => ({
+  const { increment, AddFavorite, DeleteFavorite } = useBoundStore((state) => ({
     increment: state.Increment,
     AddFavorite: state.AddFavorite,
+    DeleteFavorite: state.DeleteFavorite,
   }));
 
   return <>   
@@ -23,6 +24,9 @@ const CounterView = ({ counter }: { counter: Counter }) => {
     </button>
     <button onClick={() => AddFavorite(counter.name)}>
       Add Favorite
+    </button>
+    <button onClick={() => DeleteFavorite(counter.name)}>
+      Delete Favorite
     </button>
   </>
 }

@@ -19,10 +19,11 @@ export type ClientState = {
     error: string | null;
 
     GetCounters: () => Promise<void>;
-    GetFavorites: () => Promise<void>;
     Create: (name: string) => Promise<void>;
     Increment: (name: string) => Promise<void>;
     AddFavorite: (name: string) => Promise<void>;
+    GetFavorites: () => Promise<void>;
+    DeleteFavorite: (name: string) => Promise<void>;
     decrement: () => Promise<void>;
 }
 
@@ -162,6 +163,26 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
                 set((state) => {
                     return {
                         favorites: [...state.favorites, result.data],
+                        isLoading: false,
+                    }
+                });
+                break;
+            case "error":
+                set(() => ({ error: result.error, isLoading: false }));
+                break;
+        }
+        resolve();
+    }),
+
+    DeleteFavorite: async (name: string) => new Promise<void>(async (resolve) => {
+        set(() => ({ isLoading: true }));
+        const body = JSON.stringify({ name });
+        const result = await fetchData("api/favorites/delete", { method: "POST", body }, parseFavorite);
+        switch (result.type) {
+            case "success":
+                set((state) => {
+                    return {
+                        favorites: state.favorites.filter((f) => f !== result.data),
                         isLoading: false,
                     }
                 });

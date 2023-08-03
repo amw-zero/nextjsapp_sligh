@@ -30,4 +30,8 @@ process CounterApp:
     def AddFavorite(name: String):
         favorites := favorites.append(name)
     end
+
+    def DeleteFavorite(name: String):
+        favorites := favorites.delete(name)
+    end
 end
