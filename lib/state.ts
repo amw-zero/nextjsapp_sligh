@@ -19,7 +19,7 @@ export type ClientState = {
     error: string | null;
 
     GetCounters: () => Promise<void>;
-    Create: (name: string) => Promise<void>;
+    CreateCounter: (name: string) => Promise<void>;
     Increment: (name: string) => Promise<void>;
     AddFavorite: (name: string) => Promise<void>;
     GetFavorites: () => Promise<void>;
@@ -134,7 +134,7 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
         resolve();
     }),
 
-    Create: async (name: string) => new Promise<void>(async (resolve) => {
+    CreateCounter: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const body = JSON.stringify({ name });
         const result = await fetchData("api/counters/create", { method: "POST", body }, parseCounter);
@@ -204,17 +204,3 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
 }));
 
 export const store = makeStore();
-
-export class Server {
-    count: number = 0;
-
-    increment() {
-        this.count += 1;
-    }
-
-    decrement() {
-        this.count -= 1;
-    }
-}
-
-

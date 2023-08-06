@@ -7,11 +7,11 @@ process CounterApp:
     counters: Set(Counter)
     favorites: Set(String)
 
-    def Get():
+    def GetCounters():
         counters
     end
 
-    def Create(name: String):
+    def CreateCounter(name: String):
         counters := counters.append(Counter.new(name, 0))
     end
 
