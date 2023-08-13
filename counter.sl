@@ -1,5 +1,5 @@
 entity Counter:
-    name: String
+    name: Id(String)
     value: Int
 end
 

@@ -12,6 +12,11 @@ export interface Counter {
     value: number;
 }
 
+interface DBState {
+    counters: Counter[];
+    favorites: String[];
+}
+
 export type ClientState = {
     counters: Counter[];
     favorites: String[];
@@ -25,6 +30,9 @@ export type ClientState = {
     GetFavorites: () => Promise<void>;
     DeleteFavorite: (name: string) => Promise<void>;
     decrement: () => Promise<void>;
+
+    setDBState: (state: Partial<DBState>) => Promise<void>;
+    teardownDBState: () => Promise<void>;
 }
 
 type FetchResult<T> = 
@@ -56,12 +64,8 @@ function parseCounter(resp: any): Counter | undefined {
     return;
 }
 
-
 function parseCounters(resp: any): Counter[] | undefined {
     let parsed = resp.map(parseCounter).filter((c: Counter) => c);
-    if (parsed.length === 0) {
-        return;
-    }
 
     return parsed;
 }
@@ -82,12 +86,14 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
 
     GetCounters: async () => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
-        const result = await fetchData("api/counters", { method: "GET" }, parseCounters)
+        const result = await fetchData("http://localhost:3000/api/counters", { method: "GET" }, parseCounters)
         switch (result.type) {
             case "success":
+                console.log("Success, setting result: ", result.data)
                 set(() => ({ counters: result.data, isLoading: false }));
                 break;
             case "error":
+                console.log("Error");
                 set(() => ({ error: result.error, isLoading: false }));
                 break;
         }
@@ -96,7 +102,7 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
 
     GetFavorites: async () => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
-        const result = await fetchData("api/favorites", { method: "GET" }, parseFavorites)
+        const result = await fetchData("http://localhost:3000/api/favorites", { method: "GET" }, parseFavorites)
         switch (result.type) {
             case "success":
                 set(() => ({ favorites: result.data, isLoading: false }));
@@ -111,7 +117,7 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
     Increment: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const body = JSON.stringify({ name });
-        const result = await fetchData("api/counters/increment", { method: "POST", body }, parseCounter);
+        const result = await fetchData("http://localhost:3000/api/counters/increment", { method: "POST", body }, parseCounter);
         switch (result.type) {
             case "success":
                 set((state) => {
@@ -137,10 +143,11 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
     CreateCounter: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const body = JSON.stringify({ name });
-        const result = await fetchData("api/counters/create", { method: "POST", body }, parseCounter);
+        const result = await fetchData("http://localhost:3000/api/counters/create", { method: "POST", body }, parseCounter);
         switch (result.type) {
             case "success":
                 set((state) => {
+                    // This allows the client to become incoherent. How to resolve?
                     return {
                         counters: [...state.counters, result.data],
                         isLoading: false,
@@ -157,7 +164,7 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
     AddFavorite: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const body = JSON.stringify({ name });
-        const result = await fetchData("api/favorites/create", { method: "POST", body }, parseFavorite);
+        const result = await fetchData("http://localhost:3000/api/favorites/create", { method: "POST", body }, parseFavorite);
         switch (result.type) {
             case "success":
                 set((state) => {
@@ -177,7 +184,7 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
     DeleteFavorite: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const body = JSON.stringify({ name });
-        const result = await fetchData("api/favorites/delete", { method: "POST", body }, parseFavorite);
+        const result = await fetchData("http://localhost:3000/api/favorites/delete", { method: "POST", body }, parseFavorite);
         switch (result.type) {
             case "success":
                 set((state) => {
@@ -200,6 +207,26 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
             set((state) => ({ counters: [], isLoading: false }))
             resolve();
         }, 1000)
+    }),
+
+    setDBState: async (state: Partial<DBState>) => new Promise<void>(async (resolve) => {
+        try {
+            await fetch("http://localhost:3000/api/dbsetup", { method: "POST", body: JSON.stringify(state)});
+        } catch (e) {
+            console.log(e);
+        } finally {
+            resolve();
+        } 
+    }),
+
+    teardownDBState: async () => new Promise<void>(async (resolve) => {
+        try {
+            await fetch("http://localhost:3000/api/dbteardown", { method: "GET" });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            resolve();
+        }
     }),
 }));
 
