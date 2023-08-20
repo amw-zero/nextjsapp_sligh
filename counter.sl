@@ -32,6 +32,10 @@ process CounterApp:
     end
 
     def DeleteFavorite(name: String):
-        favorites := favorites.delete(name)
+        def findFavorite(favName: String):
+            name.equalsStr(favName)
+        end
+
+        favorites := favorites.delete(findFavorite)
     end
 end

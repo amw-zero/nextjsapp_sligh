@@ -52,6 +52,7 @@ async function fetchData<T>(path: string, init: RequestInit, parser: FetchParser
             return { type: "error", error: "fetch_parse_err" };
         }
     } catch (e) {
+        console.log("AMW fetch error", {e})
         return { type: "error", error: "fetch_err" };
     }
 }
@@ -76,6 +77,15 @@ function parseFavorite(resp: any): String | undefined {
 
 function parseFavorites(resp: any): String[] | undefined {
     return resp.map(parseFavorite);
+}
+
+function parseDeleteFavorite(resp: any): String | number[] | undefined {
+    console.log("Parse delete fav", {resp});
+    if (resp.message && resp.message === "not_found") {
+        return [];
+    }
+
+    return parseFavorite(resp);
 }
 
 export const makeStore = () => createStore<ClientState>()((set) => ({
@@ -158,7 +168,7 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
                 set(() => ({ error: result.error, isLoading: false }));
                 break;
         }
-        resolve();
+        resolve();  
     }),
 
     AddFavorite: async (name: string) => new Promise<void>(async (resolve) => {
@@ -184,12 +194,13 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
     DeleteFavorite: async (name: string) => new Promise<void>(async (resolve) => {
         set(() => ({ isLoading: true }));
         const body = JSON.stringify({ name });
-        const result = await fetchData("http://localhost:3000/api/favorites/delete", { method: "POST", body }, parseFavorite);
+        const result = await fetchData("http://localhost:3000/api/favorites/delete", { method: "POST", body }, parseDeleteFavorite);
         switch (result.type) {
             case "success":
+                console.log("Deleting favorite from client");
                 set((state) => {
                     return {
-                        favorites: state.favorites.filter((f) => f !== result.data),
+                        favorites: state.favorites.filter((f) => f !== name),
                         isLoading: false,
                     }
                 });
