@@ -52,7 +52,6 @@ async function fetchData<T>(path: string, init: RequestInit, parser: FetchParser
             return { type: "error", error: "fetch_parse_err" };
         }
     } catch (e) {
-        console.log("AMW fetch error", {e})
         return { type: "error", error: "fetch_err" };
     }
 }
@@ -80,7 +79,6 @@ function parseFavorites(resp: any): String[] | undefined {
 }
 
 function parseDeleteFavorite(resp: any): String | number[] | undefined {
-    console.log("Parse delete fav", {resp});
     if (resp.message && resp.message === "not_found") {
         return [];
     }
@@ -99,7 +97,6 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
         const result = await fetchData("http://localhost:3000/api/counters", { method: "GET" }, parseCounters)
         switch (result.type) {
             case "success":
-                console.log("Success, setting result: ", result.data)
                 set(() => ({ counters: result.data, isLoading: false }));
                 break;
             case "error":
@@ -197,7 +194,6 @@ export const makeStore = () => createStore<ClientState>()((set) => ({
         const result = await fetchData("http://localhost:3000/api/favorites/delete", { method: "POST", body }, parseDeleteFavorite);
         switch (result.type) {
             case "success":
-                console.log("Deleting favorite from client");
                 set((state) => {
                     return {
                         favorites: state.favorites.filter((f) => f !== name),
