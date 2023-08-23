@@ -1,4 +1,4 @@
-entity Counter:
+record Counter:
     name: Id(String)
     value: Int
 end
