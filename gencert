@@ -1,3 +1,3 @@
 # sligh counter.sl -cert __tests__/sligh.test.ts -include Counter -out __tests__/model.ts
 
-sligh counter.sl -cert __tests__/witness.ts
+sligh counter.sl -w __tests__/witness.ts
