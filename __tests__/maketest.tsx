@@ -15,27 +15,21 @@ export function makeTest(
     runImpl: any,
     expectations: any,
   ) {
-    test(`Test local action refinement: ${actionName}`, async () => {
+    test(`Test local action simulation: ${actionName}`, async () => {
       let impl: StoreApi<ClientState>;
   
       await fc.assert(fc.asyncProperty(stateGen, async (state) => {
-        console.log(`\n\n|============== Test frame: ${actionName} =============|`);
-
-        console.log("|-- start state: ", JSON.stringify(state, null, 4));
         impl = makeStore();        
   
         const clientState = implSetup(state);
         impl.setState(clientState);
 
         await impl.getState().setDBState(dbSetup(state));
-        
         await runImpl(impl.getState(), state);
-        console.log("Impl result: ", JSON.stringify(impl.getState(), null, 4))
 
         switch (stateType) {
           case "write": {
             const clientModelResult = model(clientModelArg(state));
-            console.log("Client model result ", JSON.stringify(clientModelResult, null, 4));
             for (const expectation of expectations) {
               const { modelExpectation, implExpectation } = expectation(clientModelResult, impl.getState());
     
@@ -45,7 +39,6 @@ export function makeTest(
           }
           case "read": {
             let modelResult = model(modelArg(state));
-            console.log("Model result ", JSON.stringify(modelResult, null, 4));
             for (const expectation of expectations) {
               const { modelExpectation, implExpectation } = expectation(modelResult, impl.getState());
     
@@ -56,7 +49,7 @@ export function makeTest(
         }
       }).afterEach(async () => {
         await impl.getState().teardownDBState();
-      }), { endOnFailure: true, numRuns: 1 });
+      }), { endOnFailure: true, numRuns: 25 });
     });
   }
 
